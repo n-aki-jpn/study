@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>【最終総評】社内システム開発に伴うプログラミング言語選定 報告書</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Segoe UI', sans-serif;
+            font-size: 13px; line-height: 1.5; color: #1e293b;
+            background-color: #f8fafc;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff; padding: 25px 20px; text-align: center;
+            border-bottom: 4px solid #3b82f6; margin-bottom: 20px;
+        }
+        .header h1 { margin: 0 0 8px 0; font-size: 22px; font-weight: bold; }
+        .header p { margin: 0; font-size: 13px; color: #93c5fd; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px 30px 15px; }
+        
+        h2 {
+            font-size: 16px; color: #1e3a8a; border-left: 5px solid #3b82f6;
+            padding-left: 10px; margin-top: 25px; margin-bottom: 12px;
+        }
+        h3 { font-size: 14px; color: #0f172a; margin-top: 15px; margin-bottom: 8px; }
+        
+        /* 前提条件ボックス */
+        .grid-box {
+            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;
+            padding: 15px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .grid-table { display: table; width: 100%; }
+        .grid-row { display: table-row; }
+        .grid-label { display: table-cell; font-weight: bold; width: 22%; padding: 6px 0; color: #475569; border-bottom: 1px solid #f1f5f9; }
+        .grid-value { display: table-cell; width: 78%; padding: 6px 0; color: #0f172a; border-bottom: 1px solid #f1f5f9; }
+        .grid-value strong { color: #2563eb; }
+
+        /* 比較表 */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-size: 12px; }
+        th, td { border: 1px solid #cbd5e1; padding: 10px 12px; text-align: left; vertical-align: top; }
+        th { background-color: #0f172a; color: #ffffff; font-weight: bold; }
+        tr:nth-child(even) td { background-color: #f8fafc; }
+        
+        /* バッジ */
+        .badge { display: inline-block; padding: 2px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; margin-bottom: 4px; }
+        .badge-blue { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-green { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-yellow { background-color: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+        .badge-red { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+        ul, ol { padding-left: 20px; margin-bottom: 12px; }
+        li { margin-bottom: 4px; }
+        .text-important { font-weight: bold; color: #1e3a8a; }
+        .recommend-card {
+            background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 5px solid #2563eb;
+            padding: 15px; border-radius: 4px; margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>社内システム開発に伴うプログラミング言語選定 総合報告書</h1>
+        <p>Windows隔離環境から将来のLinux移行まで見据えた「常時稼働・社内API連携バッチ」の総評</p>
+    </div>
+
+    <div class="container">
+
+        <h2>1. 確定した前提条件・システム要件</h2>
+        <div class="grid-box">
+            <div class="grid-table">
+                <div class="grid-row">
+                    <div class="grid-label">用途・形態</div>
+                    <div class="grid-value">社内システム間のデータ連携（画面なしバッチ処理）</div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-label">現在の稼働環境</div>
+                    <div class="grid-value">Windows Server（本番は外部インターネット通信が不可能な隔離環境）</div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-label">将来の拡張性</div>
+                    <div class="grid-value"><strong>将来的にLinux（RHEL系等）サーバーへ移行する可能性あり</strong></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-label">主要連携先</div>
+                    <div class="grid-value">Oracle Database ＆ <strong>社内の別サービスAPI（イントラネット内通信）</strong></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-label">起動頻度・運用</div>
+                    <div class="grid-value"><strong>5分間隔などの高頻度で常時稼働</strong>する仕組み</div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-label">最優先基準</div>
+                    <div class="grid-value">現要員のスキルに縛られず、将来の「運用・長期保守性」を最優先する</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>2. 最終候補2案の多角的一覧比較</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 18%;">比較項目</th>
+                    <th style="width: 41%;">【第一候補】C# (.NET 8 LTS) ／ バイナリ持参型</th>
+                    <th style="width: 41%;">【第二候補】Go (Golang) ／ ソースコード持参型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>常時稼働・5分間隔<br>の実装形態</strong></td>
+                    <td>
+                        <span class="badge badge-blue">Windowsサービス（プロセス常駐）</span><br>
+                        標準の「Worker Service」機能でOS常駐アプリを即座に実装可能。メモリ上にDB接続やAPIトークンを保持（キャッシュ）できる。
+                    </td>
+                    <td>
+                        <span class="badge badge-green">タスクスケジューラ（都度起動）</span><br>
+                        5分ごとにOSが起動・終了させる運用に最適。「起動➔送信➔即終了」の使い捨て構造により、常駐によるメモリリークのリスクを排除。
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>将来のLinux移行<br>(ポータビリティ)</strong></td>
+                    <td>
+                        <span class="badge badge-yellow">対応可能（ただし手直しあり）</span><br>
+                        .NET 8はLinuxでも動作するが、「Windowsサービス」として作った常駐部は、Linuxの `systemd`（デーモン）用にコードの書き直しが発生する。
+                    </td>
+                    <td>
+                        <span class="badge badge-green">最高評価（ほぼ修正不要）</span><br>
+                        元々Linux親和性が非常に高い。タスクスケジューラ運用にしておけば、Linuxの `cron` に実行ファイルを乗せ換えるだけでプログラム修正なく移行完了。
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>クロスコンパイル<br>(隔離環境への展開)</strong></td>
+                    <td>
+                        <span class="badge badge-blue">Linux用バイナリの別ビルド</span><br>
+                        手元PCからLinux向けに Self-contained 形式で再ビルドして持ち込む。Windows用とは別アセンブリとして管理が必要。
+                    </td>
+                    <td>
+                        <span class="badge badge-green">圧倒的に容易</span><br>
+                        環境変数を1行変えるだけ（`GOOS=linux`）で、手元のWindowsからLinux用の単一実行ファイルを一瞬でクロスコンパイル可能。
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Oracle接続方式<br>(Clientレス対応)</strong></td>
+                    <td>
+                        <span class="badge badge-blue">ODP.NET Managed Driver</span><br>
+                        完全C#製の公式ドライバ。Oracle Client（C++製）をサーバーにインストールすることなく、`.exe` に完全内包可能。
+                    </td>
+                    <td>
+                        <span class="badge badge-blue">Pure Go Driver (sijms/go-ora)</span><br>
+                        Cコンパイラ（CGO）に依存しない純粋Go製ドライバ。Windows/Linuxどちらの環境でもそのまま動作する。
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>セキュリティ審査<br>(ファイル持ち込み)</strong></td>
+                    <td>
+                        <span class="badge badge-red">審査が厳格な傾向</span><br>
+                        ブラックボックスなバイナリ（.exe）を持ち込むため、社内ルールによってはハッシュ値の事前登録や資産申請に時間を要する場合がある。
+                    </td>
+                    <td>
+                        <span class="badge badge-green">審査を通しやすい</span><br>
+                        ソースコード（テキスト）と `vendor` 内の外部コードをそのまま持ち込むため、テキストレベルでの静的解析や目視レビューが容易。
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>将来の保守性・要員</strong></td>
+                    <td>
+                        <span class="badge badge-green">最高評価（Windows環境の標準）</span><br>
+                        国内の「Windows×Oracle」環境におけるエンジニア数が圧倒的。長期間（5〜10年）のシステム維持・保守において要員確保に困らない。
+                    </td>
+                    <td>
+                        <span class="badge badge-blue">コード平易性による属人化防止</span><br>
+                        言語仕様が小さく「誰が書いても同じコードになる」ため保守しやすい。ただし、社内業務バッチ分野での要員市場はC#より狭い。
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>3. 最終判断の総評とおすすめの選定方針</h2>
+        
+        <div class="recommend-card">
+            <strong>【結論】「将来的なLinux移行の現実度」と「社内のセキュリティルール」が最大の決定打になります。</strong>
+            <p style="margin-top: 5px; margin-bottom: 0;">
+                現行のWindows Serverでの運用の安定性と、5〜10年先の保守要員の捕まえやすさを最優先するなら<strong>C#</strong>が手堅いです。しかし、数年以内にLinuxへの移行が具体化している、あるいは隔離環境への「バイナリ（.exe）持ち込み審査」が極めて厳しい社内風土である場合は、ポータビリティと透明性に勝る<strong>Go</strong>が逆転で最適解となります。
+            </p>
+        </div>
+
+        <h3>A案：C#を選択すべきシチュエーション</h3>
+        <ul>
+            <li>Linux移行の可能性はあるがまだ不確定で、まずは現行のWindows Server環境で「最も社内実績が多く、トラブル時に社内ナレッジを頼れる体制」を重視する場合。</li>
+            <li>5分間隔の通信において、毎回APIの認証トークンを取得し直すのを避け、メモリ上にトークンやDB接続（コネクションプーリング）を常駐・キャッシュさせて効率化したい場合。</li>
+        </ul>
+
+        <h3>B案：Goを選択すべきシチュエーション</h3>
+        <ul>
+            <li>Linuxへの移行時期がほぼ決まっている、または高確率で発生するため、OS移行時にプログラムの書き直しコストを「ゼロ」に抑えたい場合。</li>
+            <li>Windowsのタスクスケジューラ（Linux移行後はcron）による「5分ごとの都度起動・都度終了（使い捨て）」の運用が社内ルール上、最も管理しやすい場合。</li>
+        </ul>
+
+        <h2>4. 次の議論（インフラ・API・セキュリティ担当者）への確認事項</h2>
+        <ol>
+            <li><strong>持ち込み規約の確認：</strong> 隔離環境のサーバーに対して、「中身の確認できないビルド済みの `.exe`」と、「テキスト状態のソースコード一式（Go現地ビルド案）」のどちらがセキュリティ審査をスムーズに通過できるか。</li>
+            <li><strong>常駐か都度起動かの運用ルール確認：</strong> 5分間隔のバッチを動かすにあたり、インフラ監視の観点から「Windowsサービスとして常駐」させるのと、「タスクスケジューラで5分おきに都度起動」させるの、どちらがサーバー運用ルール（エラー検知やリソース管理）に合致するか。</li>
+            <li><strong>通信経路の確認：</strong> 本番の隔離Windowsサーバーから、別サービスのAPIサーバー（社内IP）へのポート疎通（一般的にはポート80または443）が現状の社内ネットワークで許可されているか。</li>
+        </ol>
+
+    </div>
+
+</body>
+</html>
